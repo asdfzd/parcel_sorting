@@ -542,7 +542,7 @@ source ~/cobot3_ws/install/setup.bash
 ```bash
 # Isaac Sim 실행 후 시뮬레이션 씬 로드
 # ROS2 Bridge 활성화 확인
-isaac_python <시뮬레이션 스크립트>.py
+isaac_python run_ab_dual_robot_ros_gate.py
 ```
 
 ### 2. (Vision PC: `vision`) 자동 실행 스크립트 사용 — `start_vision.sh`
