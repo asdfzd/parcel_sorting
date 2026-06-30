@@ -41,7 +41,7 @@
 
 | PC | Hostname | IP | 역할 |
 |---|---|---|---|
-| Vision PC | `taehwan` | 10.0.0.1 | YOLO11 추론, QR 디코딩, PyQt5 GUI, ROS2 허브 노드 |
+| Vision PC | `vision` | 10.0.0.1 | YOLO11 추론, QR 디코딩, PyQt5 GUI, ROS2 허브 노드 |
 | Isaac Sim PC | `IsaacSim05` | 10.0.0.2 | Isaac Sim 시뮬레이션 (컨베이어, 카메라, OmniGraph 제어) |
 
 두 PC는 **유선 기가비트 LAN**으로 직접 연결되어 있으며, 정적 IP(netplan) + FastDDS XML 프로필로 유선 인터페이스만 사용하도록 제한되어 있습니다 (설정 방법은 "📦 의존성 → 0. PC 간 LAN 통신 설정" 참고).
@@ -131,11 +131,11 @@
 cobot3/
 ├── cobot3/
 │   ├── __init__.py
-│   ├── talker.py                  # ROS2 예제 잔재 — 미사용 시 삭제 권장
-│   ├── listener.py                # ROS2 예제 잔재 — 미사용 시 삭제 권장
+│   ├── talker.py                  # ROS2 예제 - PC간 통신 테스트용
+│   ├── listener.py                # ROS2 예제 - PC간 통신 테스트용
 │   ├── parcel_detector_node.py
 │   ├── qr_decoder_node.py
-│   ├── patchcore_anomaly_node.py  # 현재 미사용 (이상 탐지, 실험용)
+│   ├── patchcore_anomaly_node.py  # (이상 탐지, 실험용)
 │   ├── parcel_hub_node.py
 │   └── parcel_control_gui.py
 ├── launch/
@@ -145,8 +145,8 @@ cobot3/
 │   ├── parcel_box_baseline.pt
 │   ├── parcel_box_conveyor_det.pt
 │   ├── parcel_box_isaac_det.pt
-│   ├── patchcore_memory_bank.pt   # PatchCore 미사용
-│   └── patchcore_threshold.pt     # PatchCore 미사용
+│   ├── patchcore_memory_bank.pt   # PatchCore
+│   └── patchcore_threshold.pt     # PatchCore
 ├── scripts/
 │   └── start_vision.sh
 ├── resource/
@@ -161,7 +161,6 @@ cobot3/
 └── LICENSE
 ```
 
-> ⚠️ `cobot3_ws/src/basic/`(개인 실습 코드 폴더)는 프로젝트 본 기능과 무관하므로 **소스코드 제출(zip)에서 제외**합니다. 압축 시 위 `cobot3/` 패키지(및 필요 시 `nova_carter/`)만 포함하세요.
 
 ---
 
@@ -268,7 +267,7 @@ PatchCore 기반 박스 이상 감지 노드입니다. RGB 이미지와 YOLO bbo
 
 | PC | Hostname | IP | 역할 | CPU | GPU | RAM |
 |---|---|---|---|---|---|---|
-| Vision PC | `taehwan` | 10.0.0.1 | Vision/GUI | *(입력 필요)* | *(입력 필요)* | *(입력 필요)* |
+| Vision PC | `vision` | 10.0.0.1 | Vision/GUI | *(입력 필요)* | *(입력 필요)* | *(입력 필요)* |
 | Isaac Sim PC | `IsaacSim05` | 10.0.0.2 | Simulation | *(입력 필요)* | RTX 5080 (Blackwell) | *(입력 필요)* |
 
 **네트워크:** 유선 기가비트 LAN 직결, 정적 IP + FastDDS XML 프로필(유선 인터페이스 제한)
@@ -281,12 +280,12 @@ PatchCore 기반 박스 이상 감지 노드입니다. RGB 이미지와 YOLO bbo
 
 ### 0. PC 간 LAN 통신 설정 (사전 준비)
 
-두 PC(`taehwan`, `IsaacSim05`)는 **유선 기가비트 LAN 직결**로 통신합니다. 다른 의존성 설치 전에 먼저 네트워크를 구성해야 합니다. 초기에는 WiFi로 연결했으나 지연/패킷 손실 문제로 유선으로 전환했습니다.
+두 PC(`vision`, `IsaacSim05`)는 **유선 기가비트 LAN 직결**로 통신합니다. 다른 의존성 설치 전에 먼저 네트워크를 구성해야 합니다. 초기에는 WiFi로 연결했으나 지연/패킷 손실 문제로 유선으로 전환했습니다.
 
 | 항목 | 내용 |
 |---|---|
 | 연결 방식 | 유선 기가비트 LAN, PC 간 직결 (스위치 미경유) |
-| Vision PC (`taehwan`) | 10.0.0.1 |
+| Vision PC (`vision`) | 10.0.0.1 |
 | Isaac Sim PC (`IsaacSim05`) | 10.0.0.2 |
 | 유선 인터페이스명 | `enp131s0` (양쪽 PC 동일) |
 | IP 할당 방식 | 정적 IP (netplan) |
@@ -297,7 +296,7 @@ PatchCore 기반 박스 이상 감지 노드입니다. RGB 이미지와 YOLO bbo
 
 각 PC에서 `/etc/netplan/99-wired-static.yaml` 파일을 생성합니다.
 
-Vision PC (`taehwan`):
+Vision PC (`vision`):
 ```bash
 sudo nano /etc/netplan/99-wired-static.yaml
 ```
@@ -381,7 +380,7 @@ cat > ~/.ros/fastdds_wired.xml << 'EOF'
 EOF
 ```
 
-Vision PC (`taehwan`, IP `10.0.0.1`):
+Vision PC (`vision`, IP `10.0.0.1`):
 ```bash
 mkdir -p ~/.ros
 cat > ~/.ros/fastdds_wired.xml << 'EOF'
@@ -490,7 +489,7 @@ sudo apt install libzbar0 -y
 
 ### 4. 영상 압축 변환 (image_transport republish)
 
-Isaac Sim이 발행하는 원본 이미지 토픽(`/rgb`)을 허브가 받을 수 있는 압축 포맷(`/rgb/compressed`)으로 변환해야 합니다. **Vision PC(`taehwan`)** 에서 `start_vision.sh` 실행 시 자동으로 함께 실행되며, 단독 실행 시에는 다음 명령을 사용합니다.
+Isaac Sim이 발행하는 원본 이미지 토픽(`/rgb`)을 허브가 받을 수 있는 압축 포맷(`/rgb/compressed`)으로 변환해야 합니다. **Vision PC(`vision`)** 에서 `start_vision.sh` 실행 시 자동으로 함께 실행되며, 단독 실행 시에는 다음 명령을 사용합니다.
 
 ```bash
 source /opt/ros/humble/setup.bash
@@ -546,7 +545,7 @@ source ~/cobot3_ws/install/setup.bash
 isaac_python <시뮬레이션 스크립트>.py
 ```
 
-### 2. (Vision PC: `taehwan`) 자동 실행 스크립트 사용 — `start_vision.sh`
+### 2. (Vision PC: `vision`) 자동 실행 스크립트 사용 — `start_vision.sh`
 
 `scripts/start_vision.sh`는 tmux를 이용해 비전 파이프라인 전체를 한 번에 실행합니다.
 
@@ -782,7 +781,7 @@ parcel_captures/
 
 ## 핵심 요약
 
-`cobot3`는 택배 분류 시스템에서 비전 인식과 QR 판독을 담당하는 ROS2 패키지입니다. Vision PC(`taehwan`)와 Isaac Sim PC(`IsaacSim05`)가 유선 LAN으로 연결된 분산 환경에서, 카메라 영상으로부터 택배 박스와 QR 라벨을 감지하고 QR 값을 `/qr_code`로 발행합니다. 이 결과를 M0609 로봇팔 제어 노드가 구독하면, VGC10 흡착 그리퍼를 이용해 박스를 ZONE별로 분류하는 전체 자동화 시스템으로 확장할 수 있습니다.
+`cobot3`는 택배 분류 시스템에서 비전 인식과 QR 판독을 담당하는 ROS2 패키지입니다. Vision PC(`vision`)와 Isaac Sim PC(`IsaacSim05`)가 유선 LAN으로 연결된 분산 환경에서, 카메라 영상으로부터 택배 박스와 QR 라벨을 감지하고 QR 값을 `/qr_code`로 발행합니다. 이 결과를 M0609 로봇팔 제어 노드가 구독하면, VGC10 흡착 그리퍼를 이용해 박스를 ZONE별로 분류하는 전체 자동화 시스템으로 확장할 수 있습니다.
 
 ---
 
