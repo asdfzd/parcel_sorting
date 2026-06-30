@@ -1,0 +1,7 @@
+
+# VSCode / C++ index cache
+.vscode/
+*.vc.db
+browse.vc.db
+*.db
+.ipch/

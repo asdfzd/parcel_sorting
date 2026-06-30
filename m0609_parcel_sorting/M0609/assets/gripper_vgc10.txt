@@ -1,0 +1,16 @@
+﻿"Symbol";"Value";"Unit";
+"DIMENSIONS";"101 x 100 x 100";"";
+"TraceParts.PartVersion";"1.0.9";"";
+"SUPPLIER";"OnRobot A/S";"";
+"TraceParts.PartStatus";"Published";"";
+"REFERENCE";"VGC10";"";
+"TIME";"0.35";"";
+"TraceParts.PartLanguage";"en";"";
+"DESIGN";"VGC10 Electrical Vacuum Gripper, Gripping time 0.35 s, Dimensions (folded) 101 x 100 x 100 mm - VGC10";"";
+"TraceParts.InstanceId";"33-07092021-0644732ZZSY3N0H17KDLSJ3680HARS9";"";
+"TraceParts.PartTitle";"VGC10 Electrical Vacuum Gripper";"";
+"TraceParts.PartStatusId";"";"";
+"TraceParts.PartNumber";"33-07092021-064473";"";
+"WEIGHT";"0.814 / 1.79";"";
+"TRACEPARTS";"TRACEPARTS";"";
+"TraceParts.ClassPath";"/F_ONROBOT/ONROBOT.070/";"";
